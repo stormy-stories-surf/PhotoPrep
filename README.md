@@ -1,2 +1,2 @@
 # PhotoPrep
-Bashscripts to prepare our Photos before Uploading
+Bashscripts to prepare our photos before uploading
