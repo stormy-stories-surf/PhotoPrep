@@ -8,16 +8,17 @@ declare -a PhotoFileExtension=("JPG" "jpg" "png")
 rm -rf ${PhotoOutputDir}
 mkdir ${PhotoOutputDir}
 
-for PhotoFileExtensions in ${PhotoFileExtension[@]}; do
-  for FileName in ${PhotoInputDir}/*.${PhotoFileExtensions}; do
-    FileWithExtension="$(basename -- ${FileName})"
-    File=${FileWithExtension%.*}
-    composite -gravity SouthWest -geometry +10+10 ${Watermark} ${PhotoInputDir}/${FileWithExtension} ${PhotoOutputDir}/${File}_WM.JPG
-  done;
-done;
-
-for FileName in ${PhotoOutputDir}/*.JPG; do
+for FileName in ${PhotoInputDir}/*.{JPG,jpg,jpeg,png}; do  
   FileWithExtension="$(basename -- ${FileName})"
   File=${FileWithExtension%.*}
-  convert ${FileName} -quality 50% ${PhotoOutputDir}/${File}_50p.JPG
+  identify ${PhotoInputDir}/${FileWithExtension} -format "%w x %h"
+#  convert ${PhotoInputDir}/${FileWithExtension} -ping ${PhotoInputDir}/${FileWithExtension} #-format "%w x %h"
+#    composite -gravity SouthWest -geometry +10+10 ${Watermark} ${PhotoInputDir}/${FileWithExtension} ${PhotoOutputDir}/${File}_WM.JPG
 done;
+
+
+#for FileName in ${PhotoOutputDir}/*.JPG; do
+#  FileWithExtension="$(basename -- ${FileName})"
+#  File=${FileWithExtension%.*}
+#  convert ${FileName} -quality 50% ${PhotoOutputDir}/${File}_50p.JPG
+#done;
