@@ -8,6 +8,7 @@ declare -a PhotoFileExtension=("JPG" "jpg" "png")
 
 rm -rf ${PhotoOutputDir}
 mkdir ${PhotoOutputDir}
+mkdir ${PhotoOutputDir}/Compressed
 
 for FileName in ${PhotoInputDir}/*.{JPG,jpg}; do
   FileWithExtension="$(basename -- ${FileName})"
@@ -19,13 +20,7 @@ for FileName in ${PhotoInputDir}/*.{JPG,jpg}; do
   Vector="$(bc -l <<< "($VARIABLE_WIDTH / 6000)*100")%"
   convert ${Watermark} -resize ${Vector} ${SizedWatermark}
   composite -gravity SouthWest -geometry +10+10   ${SizedWatermark} ${PhotoInputDir}/${FileWithExtension} ${PhotoOutputDir}/${File}_WM.JPG
-  jhead -purejpg ${PhotoOutputDir}/${File}_WM.JPG 
-  echo ${FileName} ${VARIABLE_HEIGHT} ${VARIABLE_WIDTH} ${ImageSize} ${Vector}
+  jhead -purejpg ${PhotoOutputDir}/${File}_WM.JPG
+  convert ${PhotoOutputDir}/${File}_WM.JPG -quality 50% ${PhotoOutputDir}/Compressed/${File}_WM_50p.JPG
+  echo "Finished Image"${FileName}
 done;
-
-
-#for FileName in ${PhotoOutputDir}/*.JPG; do
-#  FileWithExtension="$(basename -- ${FileName})"
-#  File=${FileWithExtension%.*}
-#  convert ${FileName} -quality 50% ${PhotoOutputDir}/${File}_50p.JPG
-#done;
