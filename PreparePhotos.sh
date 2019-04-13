@@ -19,6 +19,7 @@ for FileName in ${PhotoInputDir}/*.{JPG,jpg}; do
   Vector="$(bc -l <<< "($VARIABLE_WIDTH / 6000)*100")%"
   convert ${Watermark} -resize ${Vector} ${SizedWatermark}
   composite -gravity SouthWest -geometry +10+10   ${SizedWatermark} ${PhotoInputDir}/${FileWithExtension} ${PhotoOutputDir}/${File}_WM.JPG
+  jhead -purejpg ${PhotoOutputDir}/${File}_WM.JPG 
   echo ${FileName} ${VARIABLE_HEIGHT} ${VARIABLE_WIDTH} ${ImageSize} ${Vector}
 done;
 
