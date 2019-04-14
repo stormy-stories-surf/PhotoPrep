@@ -17,8 +17,9 @@ mkdir -p ${PHOTO_OUTPUT_DIR}
 for FILE_NAME in ${PHOTO_INPUT_DIR}/*.{JPG,jpg}; do
   FILE_WITH_EXTENSION="$(basename -- ${FILE_NAME})"
   FILE=${FILE_WITH_EXTENSION%.*}
+  OUTPUT_FILE_NAME = "windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.JPG"
   # check if the converted image already exists
-  if ! [ -f "${PHOTO_OUTPUT_DIR}/windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.JPG" ]; then
+  if ! [ -f "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}" ]; then
 
     # calculate a vector to resize the watermark depending in the image size and finaly resize the watermark
     VARIABLE_HEIGHT=$(identify -ping -format '%h' ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} )
@@ -32,9 +33,7 @@ for FILE_NAME in ${PHOTO_INPUT_DIR}/*.{JPG,jpg}; do
     # erase the metadata out of the image
     jhead -purejpg "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG"
     # compress the image
-    convert "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG" -quality "${COMPRESSION_FACTOR}%" "${PHOTO_OUTPUT_DIR}/${FILE}-WM-${COMPRESSION_FACTOR}p.JPG"
-    # rename the image for serch engine optimization
-    mv -v "${PHOTO_OUTPUT_DIR}/${FILE}-WM-${COMPRESSION_FACTOR}p.JPG" "${PHOTO_OUTPUT_DIR}/windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.JPG"
+    convert "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG" -quality "${COMPRESSION_FACTOR}%" "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
     echo "Finished Image "${FILE_NAME}
   else
     echo "Image ${FILE_NAME} already converted"
