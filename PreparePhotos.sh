@@ -17,9 +17,12 @@ mkdir -p ${PHOTO_OUTPUT_DIR}
 for FILE_NAME in ${PHOTO_INPUT_DIR}/*.{JPG,jpg}; do
   FILE_WITH_EXTENSION="$(basename -- ${FILE_NAME})"
   FILE=${FILE_WITH_EXTENSION%.*}
-  OUTPUT_FILE_NAME = "windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.JPG"
+  
+  OUTPUT_FILE_NAME="${FILE}-WM.jpg"
+  OUTPUT_FILE_NAME_COMPRESSED="windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.jpg"
+  
   # check if the converted image already exists
-  if ! [ -f "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}" ]; then
+  if ! [ -f "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME_COMPRESSED}" ]; then
 
     # calculate a vector to resize the watermark depending in the image size and finaly resize the watermark
     VARIABLE_HEIGHT=$(identify -ping -format '%h' ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} )
@@ -28,13 +31,17 @@ for FILE_NAME in ${PHOTO_INPUT_DIR}/*.{JPG,jpg}; do
     #Vector="$(bc -l <<< "($ImageSize / 20256000)*100")%"
     VECTOR="$(bc -l <<< "($VARIABLE_WIDTH / 6000)*100")%"
     convert ${WATERMARK} -resize ${VECTOR} ${SIZED_WATERMARK}
+    
     # watermark the image
-    composite -gravity SouthWest -geometry +10+10   ${SIZED_WATERMARK} ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG"
+    composite -gravity SouthWest -geometry +10+10   ${SIZED_WATERMARK} ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
+    
     # erase the metadata out of the image
-    jhead -purejpg "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG"
+    jhead -purejpg "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
+    
     # compress the image
-    convert "${PHOTO_OUTPUT_DIR}/${FILE}-WM.JPG" -quality "${COMPRESSION_FACTOR}%" "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
-    echo "Finished Image "${FILE_NAME}
+    convert "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}" -quality "${COMPRESSION_FACTOR}%" "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME_COMPRESSED}"
+    
+    echo "Finished Image "${OUTPUT_FILE_NAME_COMPRESSED}
   else
     echo "Image ${FILE_NAME} already converted"
   fi
