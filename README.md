@@ -1,9 +1,9 @@
 # PhotoPrep
-Bashscripts to prepare our photos before uploading by watermarking, compressing and deletinng metadata
+Bashscripts to prepare our photos before uploading by watermarking, compressing and deleting metadata.
 
-For This Tool Uses Imagemagick and Jhead pleas check if it is installes on your System.
+This Tool Uses Imagemagick and Jhead. Please check if it is installed on your system.
 
-If not please install
+If not please install:
 
 sudo apt-get install imagemagick imagemagick-doc
 sudo apt-get install jhead
