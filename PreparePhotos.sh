@@ -1,13 +1,111 @@
 #!/bin/bash
 #
 
+
+function usage {
+    cat <<EOF
+
+    Anwendung: terminal im INPUT_DIR öffnen eingabe: " photoprep -wm='' -o'' "
+
+    parameter um von standard parametern aohbzuweichen
+    -set -> in verbindung mit anderem Parameter um das parameter in Standard_Parameter.txt
+    -wm '' -> ändert das watermark: 'wht' -> Watermark_wht.png, 'blk' -> Watermark_blk.png
+    -o '' -> ändert die orientierung: 'nw' -> NorthWest, 'n' -> North, 'ne' -> NorthEast, 'w' -> West, 'c' -> Center, 'e' -> East, 'sw' -> SouthWest, 's' -> South, 'se' -> SouthEast
+    -ow '' -> ändert offset_width
+    -oh '' -> ändert offset_height
+    -c '' -> ändert den komprimierungs factor
+    -dir '' -> andert das output dir
+
+EOF
+    exit $1
+}
+
 #declare changeable parameters
 PHOTO_INPUT_DIR="Watermark_Test/Photos"
 POST_CATEGORY="Watermark_Test"
 POST_NAME="WatermarkedPhotos"
+#default parameters -> later set in external file
+set="0"
 WATERMARK="Watermark_Test/Watermark/Watermark.png"
+WATERMARK_ORIENTATION="SouthWest"
+OFFSET_WIDTH="10"
+OFFSET_HEIGHT="10"
+COMPRESSION_FACTOR="35"
+dir=
+
+
+#temporary variables/files
 SIZED_WATERMARK="Watermark_Test/Watermark/SIZED_WATERMARK.png"
-COMPRESSION_FACTOR="70"
+REMEMBERED_iMAGE_SIZE="0"
+
+
+for i in $*; do
+  case "$i" in
+    -set)
+      set="1"
+    ;;
+    -wm=*)
+      wm_temp=${i#-wm=}
+      case "$wm_temp" in
+        wht) WATERMARK="Watermark_wht.png" ;;
+        blk)  WATERMARK="Watermark_blk.png" ;;
+        *.png) WATERMARK=${wm_temp} ;;
+        *) echo "unknown watermark '${wm_temp}'"
+           usage 1 ;;
+      esac
+    ;;
+    -o=*)
+      o_temp=${i#-o=}
+      case "$o_temp" in
+        nw|NW|NorthWest|northwest) WATERMARK_ORIENTATION="NorthWest" ;;
+        n|N|North|north) WATERMARK_ORIENTATION="North" ;;
+        ne|NE|NorthEast|northeast) WATERMARK_ORIENTATION="NorthEast" ;;
+        w|W|West|west) WATERMARK_ORIENTATION="West" ;;
+        c|C|Center|center) WATERMARK_ORIENTATION="Center" ;;
+        e|E|East|east) WATERMARK_ORIENTATION="East" ;;
+        sw|SW|SouthWest|southwest) WATERMARK_ORIENTATION="SouthWest" ;;
+        s|S|South|south) WATERMARK_ORIENTATION="South" ;;
+        se|SE|SouthEast|southeast) WATERMARK_ORIENTATION="SouthEast" ;;
+        *)  echo "unknown orietation '${o_temp}'"
+            usage 1 ;;
+      esac
+        ;;
+    -ow=*)
+        OFFSET_WIDTH=${i#-ow=}
+        ;;
+    -oh=*)
+        OFFSET_HEIGHT=${i#-oh=}
+        ;;
+    -c=*)
+        COMPRESSION_FACTOR=${i#-c=}
+        ;;
+    -dir=*)
+        dir=${i#-dir=}
+        ;;
+    -h)
+        usage 0
+        ;;
+    -help)
+        usage 0
+        ;;
+    -*)
+        echo "unknown option '$i'"
+        usage 1
+        ;;
+    *)
+        usage 1
+        ;;
+  esac
+done;
+
+
+echo "${set}"
+echo "${WATERMARK}"
+echo "${WATERMARK_ORIENTATION}"
+echo "${OFFSET_WIDTH}"
+echo "${OFFSET_HEIGHT}"
+echo "${COMPRESSION_FACTOR}"
+echo "${dir}"
 
 # create output directory
 PHOTO_OUTPUT_DIR="${POST_CATEGORY}/${POST_NAME}"
@@ -38,9 +136,9 @@ for FILE_NAME in ${PHOTO_INPUT_DIR}/*.*; do
         convert ${WATERMARK} -resize ${VECTOR} ${SIZED_WATERMARK}
         REMEMBERED_iMAGE_SIZE=${VARIABLE_WIDTH}
       fi
-      
+
       # watermark the image
-      composite -gravity SouthWest -geometry +10+10   ${SIZED_WATERMARK} ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
+      composite -gravity SouthWest -geometry +${OFFSET_WIDTH}+${OFFSET_HEIGHT}   ${SIZED_WATERMARK} ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
 
       # erase the metadata out of the image
       jhead -purejpg "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
