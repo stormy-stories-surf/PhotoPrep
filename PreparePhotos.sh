@@ -20,8 +20,8 @@ for FILE_NAME in ${PHOTO_INPUT_DIR}/*.*; do
     FILE_WITH_EXTENSION="$(basename -- ${FILE_NAME})"
     FILE=${FILE_WITH_EXTENSION%.*}
 
-    OUTPUT_FILE_NAME="${FILE}-WM.jpg"
-    OUTPUT_FILE_NAME_COMPRESSED="windsurf-stormy-stories-surf-travel-blog-${POST_CATEGORY}-${POST_NAME}-WM-${COMPRESSION_FACTOR}p-${FILE}.jpg"
+    OUTPUT_FILE_NAME="${FILE}.jpg"
+    OUTPUT_FILE_NAME_COMPRESSED="${FILE}.jpg"
 
     # check if the converted image already exists
     if ! [ -f "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME_COMPRESSED}" ]; then
@@ -38,7 +38,7 @@ for FILE_NAME in ${PHOTO_INPUT_DIR}/*.*; do
         convert ${WATERMARK} -resize ${VECTOR} ${SIZED_WATERMARK}
         REMEMBERED_iMAGE_SIZE=${VARIABLE_WIDTH}
       fi
-      
+
       # watermark the image
       composite -gravity SouthWest -geometry +10+10   ${SIZED_WATERMARK} ${PHOTO_INPUT_DIR}/${FILE_WITH_EXTENSION} "${PHOTO_OUTPUT_DIR}/${OUTPUT_FILE_NAME}"
 
